@@ -1,0 +1,313 @@
+{
+    "Arabic (Saudi Arabia)": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"ar-sa\""
+        }
+    },
+    "Bulgarian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"bg\""
+        }
+    },
+    "Chinese (PRC)": {
+        ".flmsp": {
+            "No rating selected": "未选择评分",
+            "I rate the usefulness of this page:": "我对此页面的实用性进行评分：",
+            "Here are my additional comments:": "以下是我的其他评论：",
+            "Comment about topic": "有关主题的评论",
+            "Submit rating and optional comments about this page": "为此页面提交评分并发表评论（可选）",
+            "I disagree strongly": "我强烈反对",
+            "I disagree": "我反对",
+            "I am neutral": "我保持中立",
+            "I agree": "我同意",
+            "I agree strongly": "我强烈同意"
+        },
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"zh-cn\""
+        }
+    },
+    "Chinese (Taiwan)": {
+        ".flmsp": {
+            "No rating selected": "選取任何評分",
+            "I rate the usefulness of this page:": "我對此頁面可用性的評分︰",
+            "Here are my additional comments:": "以下是我額外的註解︰",
+            "Comment about topic": "關於主題的意見",
+            "Submit rating and optional comments about this page": "提交此頁面的評分與選擇性註解",
+            "I disagree strongly": "我非常不同意",
+            "I disagree": "我不同意",
+            "I am neutral": "我不表意見",
+            "I agree": "我同意",
+            "I agree strongly": "我非常同意"
+        },
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"zh-tw\""
+        }
+    },
+    "Croatian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"hr\""
+        }
+    },
+    "Czech": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"cs\""
+        }
+    },
+    "Danish": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"da-dk\""
+        }
+    },
+    "Dutch": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"nl-nl\""
+        }
+    },
+    "English (United States)": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"en-us\""
+        }
+    },
+    "Estonian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"et\""
+        }
+    },
+    "Finnish": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"fi\""
+        }
+    },
+    "French (Canada)": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"fr-ca\""
+        }
+    },
+    "French (France)": {
+        ".flmsp": {
+            "No rating selected": "Aucune évaluation sélectionnée",
+            "I rate the usefulness of this page:": "Utilité de cette page :",
+            "Here are my additional comments:": "Commentaires supplémentaires :",
+            "Comment about topic": "Commentaire sur la rubrique",
+            "Submit rating and optional comments about this page": "Envoyer mon avis et mes commentaires (facultatifs) concernant cette page",
+            "I disagree strongly": "Je ne suis pas du tout d'accord",
+            "I disagree": "Je ne suis pas d'accord",
+            "I am neutral": "Sans avis",
+            "I agree": "Je suis d'accord",
+            "I agree strongly": "Je suis tout à fait d'accord"
+        },
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"fr-fr\""
+        }
+    },
+    "German (Germany)": {
+        ".flmsp": {
+            "No rating selected": "Keine Bewertung ausgewählt",
+            "I rate the usefulness of this page:": "Meine Bewertung für den Nutzen dieser Seite:",
+            "Here are my additional comments:": "Meine zusätzlichen Kommentare:",
+            "Comment about topic": "Kommentar zum Thema",
+            "Submit rating and optional comments about this page": "Bewertung und optionale Kommentare zu dieser Seite",
+            "I disagree strongly": "Ich stimme überhaupt nicht zu",
+            "I disagree": "Ich stimme nicht zu",
+            "I am neutral": "Ich bin neutral",
+            "I agree": "Ich stimme zu",
+            "I agree strongly": "Ich stimme stark zu"
+        },
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"de-de\""
+        },
+        ".htm": {
+            "/webhelp/english/": "/webhelp/german/"
+        }
+    },
+    "Greek": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"el\""
+        }
+    },
+    "Hebrew (Israel)": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"he-il\""
+        }
+    },
+    "Hungarian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"hu\""
+        }
+    },
+    "Indonesian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"id\""
+        }
+    },
+    "Italian": {
+        ".flmsp": {
+            "No rating selected": "Nessuna valutazione selezionata",
+            "I rate the usefulness of this page:": "L'utilità di questa pagina è:",
+            "Here are my additional comments:": "Ecco i miei commenti:",
+            "Comment about topic": "Commento sull'argomento",
+            "Submit rating and optional comments about this page": "Invia una valutazione e commenti facoltativi relativi a questa pagina",
+            "I disagree strongly": "Sono in forte disaccordo",
+            "I disagree": "Non sono d'accordo",
+            "I am neutral": "Sono neutro",
+            "I agree": "Sono d'accordo",
+            "I agree strongly": "Sono molto d'accordo"
+        },
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"it-it\""
+        }
+    },
+    "Japanese": {
+        ".flmsp": {
+            "No rating selected": "評価が選択されていません。",
+            "I rate the usefulness of this page:": "このページの有効性を評価します。",
+            "Here are my additional comments:": "その他のコメントを以下に表示します。",
+            "Comment about topic": "トピックに関するコメント",
+            "Submit rating and optional comments about this page": "このページに関する評価と任意のコメントを送信する",
+            "I disagree strongly": "まったく同意しない",
+            "I disagree": "同意しない",
+            "I am neutral": "どちらでもない",
+            "I agree": "同意する",
+            "I agree strongly": "強く同意する"
+        },
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"ja-jp\""
+        }
+    },
+    "Korean": {
+        ".flmsp": {
+            "No rating selected": "등급이 선택되지 않았습니다.",
+            "I rate the usefulness of this page:": "이 페이지의 유용성을 평가합니다.",
+            "Here are my additional comments:": "내 추가 의견은 다음과 같습니다.",
+            "Comment about topic": "주제에 대한 댓글",
+            "Submit rating and optional comments about this page": "이 페이지의 점수 및 페이지에 대한 의견 제출",
+            "I disagree strongly": "전혀 동의하지 않음",
+            "I disagree": "동의하지 않음",
+            "I am neutral": "보통",
+            "I agree": "동의함",
+            "I agree strongly": "매우 동의함"
+        },
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"ko-kr\""
+        }
+    },
+    "Latvian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"lv\""
+        }
+    },
+    "Lithuanian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"lt\""
+        }
+    },
+    "Malay (Malaysia)": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"ms\""
+        }
+    },
+    "Norwegian (Bokmål)": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"nb-no\""
+        }
+    },
+    "Polish": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"pl\""
+        }
+    },
+    "Portuguese (Brazil)": {
+        ".flmsp": {
+            "No rating selected": "Nenhuma avaliação selecionada",
+            "I rate the usefulness of this page:": "Estou classificando a utilidade desta página:",
+            "Here are my additional comments:": "Eis meus comentários adicionais:",
+            "Comment about topic": "Comentário sobre o tópico",
+            "Submit rating and optional comments about this page": "Enviar avaliação e comentários opcionais sobre esta página",
+            "I disagree strongly": "Discordo totalmente",
+            "I disagree": "Discordo",
+            "I am neutral": "Sem opinião",
+            "I agree": "Concordo",
+            "I agree strongly": "Concordo plenamente"
+        },
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"pt-br\""
+        }
+    },
+    "Portuguese (Portugal)": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"pt-pt\""
+        }
+    },
+    "Romanian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"ro-ro\""
+        }
+    },
+    "Russian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"ru-ru\""
+        }
+    },
+    "Serbian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"sr\""
+        }
+    },
+    "Slovak": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"sk\""
+        }
+    },
+    "Slovenian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"sl\""
+        }
+    },
+    "Spanish (Latin America)": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"es-mx\""
+        }
+    },
+    "Spanish (Spain)": {
+        ".flmsp": {
+            "No rating selected": "No se ha seleccionado ninguna valoración.",
+            "I rate the usefulness of this page:": "Utilidad de esta página:",
+            "Here are my additional comments:": "Comentarios adicionales:",
+            "Comment about topic": "Comentario sobre el tema",
+            "Submit rating and optional comments about this page": "Enviar la valoración y los comentarios opcionales sobre esta página",
+            "I disagree strongly": "Estoy totalmente en desacuerdo",
+            "I disagree": "Estoy en desacuerdo",
+            "I am neutral": "Neutral",
+            "I agree": "Estoy de acuerdo",
+            "I agree strongly": "Estoy totalmente de acuerdo"
+        },
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"es-es\""
+        }
+    },
+    "Swedish": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"sv\""
+        }
+    },
+    "Thai": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"th\""
+        }
+    },
+    "Turkish": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"tr\""
+        }
+    },
+    "Ukrainian": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"uk\""
+        }
+    },
+    "Vietnamese": {
+        ".flprj": {
+            "xml:lang=\"en-us\"": "xml:lang=\"vi\""
+        }
+    }
+}

@@ -1,0 +1,43 @@
+name: Deploy to Azure App Service
+
+# Trigger deployment only on push to main branch
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # Match your Azure setting
+
+      # 3. Install dependencies (Security Check)
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. (Optional) Run Tests - Highly Recommended for ISO Compliance
+      # This ensures broken code is never deployed
+      - name: Run Tests
+        run: |
+          pip install pytest
+          pytest
+
+      # 5. Deploy to Azure Web App
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'ExtractTrackChanges' # REPLACE THIS with your actual Azure App Name
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}

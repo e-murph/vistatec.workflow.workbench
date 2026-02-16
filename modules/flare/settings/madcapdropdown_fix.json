@@ -1,0 +1,13 @@
+{
+    "<MadCap:dropDown>": "\n        <MadCap:dropDown>\n",
+    "<MadCap:dropDownHead>": "        <MadCap:dropDownHead>",
+    "<MadCap:dropDownHotspot>": "\n         <MadCap:dropDownHotspot>",
+    "</MadCap:dropDownHead>": "\n        </MadCap:dropDownHead>\n",
+    "<MadCap:dropDownBody>": "        <MadCap:dropDownBody>\n",
+    "</MadCap:dropDownBody>": "\n        </MadCap:dropDownBody>\n",
+    "</MadCap:dropDown>": "        </MadCap:dropDown>\n",
+    "<MadCap:dropDownBody>": "        <MadCap:dropDownBody>\n",
+    "</MadCap:dropDown>": "        </MadCap:dropDown>\n",
+    "<MadCap:dropDownHead": "        <MadCap:dropDownHead",
+    "<MadCap:dropDownHotspot": "\n        <MadCap:dropDownHotspot"
+}
