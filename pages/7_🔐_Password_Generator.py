@@ -4,7 +4,11 @@ from modules.shared.styles import set_page_style
 from modules.password.generator import generate_passwords
 
 # 1. Page Config
-st.set_page_config(page_title="Password Generator", page_icon="🔐", layout="wide")
+st.set_page_config(
+    page_title="Password Generator", 
+    page_icon="🔐", 
+    layout="wide"
+)
 
 # --- APPLY STYLING ---
 set_page_style(
@@ -12,11 +16,9 @@ set_page_style(
     footer_image_path="assets/banner.png"
 )
 
-# Custom CSS
-hide_streamlit_style = """
+# 2. Custom CSS
+st.markdown("""
 <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
     .block-container {padding-top: 2rem;}
     h1 {color: #0056b3;}
     .stButton>button {
@@ -24,67 +26,101 @@ hide_streamlit_style = """
         background-color: #0056b3;
         color: white;
     }
+    .streamlit-expanderHeader {
+        font-weight: bold;
+        color: #0056b3;
+    }
 </style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-# 2. Sidebar
+""", unsafe_allow_html=True)
+
+# 3. Sidebar (Clean Metadata Only)
 with st.sidebar:
-    st.header("📋 Instructions")
-    st.info(
-        """
-        1. Select password **Length**.
-        2. Choose **Quantity** (1-10).
-        3. Toggle **Numbers/Symbols**.
-        4. Click **Generate**.
-        """
-    )
+    st.header("⚙️ Settings")
+    
+    # Placeholder for potential future settings
+    st.info("No temp files are created by this tool.")
+        
     st.markdown("---")
     st.caption("🔒 Secured by Azure AD")
-    st.caption("© 2026 Vistatec, Ltd.")
+    st.caption("© Vistatec 2026")
 
-# 3. Main Content
+# 4. Main Content Area
 st.title("🔐 Secure Password Generator")
-st.markdown("""Generate cryptographically strong passwords locally.""")
-st.warning("⚠️ CONFIDENTIAL: Passwords are generated in-memory and never stored.")
 
+# --- NEW LAYOUT SECTION ---
+# A. Description
+st.markdown("""
+**Generate cryptographically strong passwords locally.**
+This tool creates random, complex passwords directly in your browser session. 
+""")
+
+# B. Instructions
+with st.expander("ℹ️ How to use this tool", expanded=True):
+    st.markdown("""
+    1. **Configure:** Set your desired length and character types (Numbers, Symbols).
+    2. **Quantity:** Choose how many unique passwords you need.
+    3. **Generate:** Click the button to create them instantly.
+    4. **Copy:** Hover over the result to copy, or download the CSV if generating a batch.
+    """)
+
+st.warning("⚠️ **CONFIDENTIAL:** Passwords are generated in-memory and **never stored** or logged.")
 st.markdown("---")
 
-# --- Controls ---
+# 5. Controls
 col1, col2 = st.columns(2)
 
 with col1:
-    length = st.slider("Password Length", min_value=8, max_value=64, value=14)
-    amount = st.slider("Quantity to Generate", min_value=1, max_value=10, value=1)
+    st.subheader("1. Configuration")
+    length = st.slider("📏 Password Length", min_value=8, max_value=64, value=14, help="Longer is stronger.")
+    amount = st.slider("🔢 Quantity to Generate", min_value=1, max_value=20, value=1)
 
 with col2:
-    st.write("**Character Options**")
-    use_numbers = st.checkbox("Include Numbers (0-9)", value=True)
-    use_symbols = st.checkbox("Include Symbols (!@#$)", value=True)
-    st.caption("*Uppercase and Lowercase letters are always included.*")
+    st.subheader("2. Character Sets")
+    use_numbers = st.toggle("Include Numbers (0-9)", value=True)
+    use_symbols = st.toggle("Include Symbols (!@#$)", value=True)
+    st.info("ℹ️ Uppercase and Lowercase letters are always included.")
 
 st.markdown("---")
 
-# --- Generation Logic ---
-if st.button("Generate Passwords", type="primary"):
+# 6. Generation Logic
+if st.button("🚀 Generate Passwords", type="primary"):
     
-    # Run the logic
-    passwords = generate_passwords(amount, length, use_numbers, use_symbols)
+    # Logic is instant, no status container needed
+    passwords = []
     
-    # Display Results
-    st.subheader("Your Secure Passwords:")
-    
-    for pwd in passwords:
-        # We use code blocks because they have a built-in 'copy' button on hover
-        st.code(pwd, language=None)
+    try:
+        passwords = generate_passwords(amount, length, use_numbers, use_symbols)
+    except Exception as e:
+        st.error(f"Error generating passwords: {e}")
+        st.stop()
 
-    # Optional: CSV Download if generating many
-    if amount > 1:
+    # 7. Results Display
+    st.subheader("🎉 Generated Passwords")
+    
+    # If single password, show it big
+    if amount == 1:
+        st.code(passwords[0], language=None)
+        st.success("Copied to clipboard? Hover over the text above!")
+        
+    # If multiple, show grid
+    else:
+        # Display in columns for compactness
+        res_col1, res_col2 = st.columns(2)
+        
+        for idx, pwd in enumerate(passwords):
+            # Alternating columns
+            target_col = res_col1 if idx % 2 == 0 else res_col2
+            target_col.code(pwd, language=None)
+
+        # CSV Download for bulk
+        st.markdown("---")
         df = pd.DataFrame(passwords, columns=["Generated Passwords"])
         csv = df.to_csv(index=False).encode('utf-8')
         
         st.download_button(
-            label="📥 Download as CSV",
+            label="📥 Download List as CSV",
             data=csv,
             file_name="generated_passwords.csv",
-            mime="text/csv"
+            mime="text/csv",
+            use_container_width=True
         )
