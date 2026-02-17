@@ -40,7 +40,7 @@ with st.sidebar:
     )
     st.markdown("---")
     st.caption("🔒 Secured by Azure AD")
-    st.caption("© Vistatec 2026")
+    st.caption("© 2026 Vistatec, Ltd.")
 
 # 3. Main Content
 st.title("🔐 Secure Password Generator")

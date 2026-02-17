@@ -6,7 +6,12 @@ from datetime import datetime
 from modules.shared.styles import set_page_style
 from modules.tmx.cleaner import clean_tmx_files
 
-st.set_page_config(page_title="TMX Cleaner", page_icon="🧹", layout="wide")
+# 1. Page Config
+st.set_page_config(
+    page_title="TMX TU Remover", 
+    page_icon="🪓", 
+    layout="wide"
+)
 
 # --- APPLY STYLING ---
 set_page_style(
@@ -14,11 +19,9 @@ set_page_style(
     footer_image_path="assets/banner.png"
 )
 
-# Custom CSS
-hide_streamlit_style = """
+# 2. Custom CSS
+st.markdown("""
 <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
     .block-container {padding-top: 2rem;}
     h1 {color: #0056b3;}
     .stButton>button {
@@ -26,37 +29,49 @@ hide_streamlit_style = """
         background-color: #0056b3;
         color: white;
     }
+    .streamlit-expanderHeader {
+        font-weight: bold;
+        color: #0056b3;
+    }
 </style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-# Sidebar
+""", unsafe_allow_html=True)
+
+# 3. Sidebar (Settings Only)
 with st.sidebar:
-    st.header("📋 Instructions")
-    st.info(
-        """
-        1. Set your **Character** and **Tag** thresholds.
-        2. Upload TMX files.
-        3. Click **Run Cleaner**.
-        4. Download the cleaned TMXs + Report.
-        """
-    )
-    st.markdown("---")
+    st.header("⚙️ Settings")
     
-    if st.button("🧹 Clear Temp Files"):
+    # Clear Temp Files Button
+    if st.button("🚮 Clear Temp Files"):
         if os.path.exists("temp_tmx_clean_input"): shutil.rmtree("temp_tmx_clean_input")
         if os.path.exists("temp_tmx_clean_output"): shutil.rmtree("temp_tmx_clean_output")
-        st.success("Temp folders cleared.")
-
+        st.toast("Temporary files cleared successfully!", icon="🧹")
+        
     st.markdown("---")
     st.caption("🔒 Secured by Azure AD")
-    st.caption("© Vistatec 2026")
+    st.caption("© 2026 Vistatec, Ltd.")
 
-# Main Content
-st.title("🧹 TMX File Cleaner")
-st.markdown("""Remove bloated translation units based on length or tag density.""")
-st.warning("⚠️ CONFIDENTIAL: For Internal Vistatec Use Only.")
+# 4. Main Content Area
+st.title("🪓 TMX TU Remover")
 
-# Settings Columns
+# --- NEW LAYOUT SECTION ---
+# A. Description
+st.markdown("""
+**Remove bloated translation units based on length or tag density.** This tool scans TMX files and removes segments that exceed specific character or tag limits.
+""")
+
+# B. Instructions
+with st.expander("ℹ️ How to use this tool", expanded=True):
+    st.markdown("""
+    1. **Configure Thresholds:** Set the maximum allowed characters and tags per segment.
+    2. **Upload Files:** Select one or multiple TMX files.
+    3. **Process:** Click **Run Cleaner**.
+    4. **Download:** Get a ZIP containing the cleaned TMX files and a detailed report.
+    """)
+
+st.warning("⚠️ **CONFIDENTIAL:** For Internal Vistatec Use Only.")
+st.markdown("---")
+
+# 5. Configuration Columns
 col1, col2 = st.columns(2)
 with col1:
     char_threshold = st.number_input(
@@ -79,71 +94,81 @@ with col2:
 
 st.markdown("---")
 
-uploaded_files = st.file_uploader("Upload TMX Files", type=["tmx"], accept_multiple_files=True)
+# 6. File Uploader
+uploaded_files = st.file_uploader(
+    "📂 Upload TMX Files", 
+    type=["tmx"], 
+    accept_multiple_files=True
+)
 
-if st.button("Run Cleaner", type="primary") and uploaded_files:
-    
-    # Define Temp Folders
-    INPUT_DIR = "temp_tmx_clean_input"
-    OUTPUT_DIR = "temp_tmx_clean_output"
-    
-    # Reset Folders
-    if os.path.exists(INPUT_DIR): shutil.rmtree(INPUT_DIR)
-    if os.path.exists(OUTPUT_DIR): shutil.rmtree(OUTPUT_DIR)
-    os.makedirs(INPUT_DIR, exist_ok=True)
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    
-    status_container = st.status("Initializing...", expanded=True)
-    
-    try:
-        # 1. Save Files
-        status_container.write("📂 Saving uploaded files...")
-        for up_file in uploaded_files:
-            file_path = os.path.join(INPUT_DIR, up_file.name)
-            with open(file_path, "wb") as f:
-                f.write(up_file.getbuffer())
+if uploaded_files:
+    if st.button("🚀 Run Cleaner", type="primary"):
         
-        # 2. Run Cleaning Logic
-        def update_status(msg):
-            status_container.write(f"⚙️ {msg}")
-
-        files_scanned, files_cleaned, tus_removed = clean_tmx_files(
-            input_folder=INPUT_DIR,
-            output_folder=OUTPUT_DIR,
-            char_threshold=char_threshold,
-            tag_threshold=tag_threshold,
-            status_callback=update_status
-        )
+        # Define Temp Folders
+        INPUT_DIR = "temp_tmx_clean_input"
+        OUTPUT_DIR = "temp_tmx_clean_output"
         
-        status_container.update(label="Cleaning Complete!", state="complete", expanded=False)
+        # Reset Folders
+        if os.path.exists(INPUT_DIR): shutil.rmtree(INPUT_DIR)
+        if os.path.exists(OUTPUT_DIR): shutil.rmtree(OUTPUT_DIR)
+        os.makedirs(INPUT_DIR, exist_ok=True)
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
         
-        # 3. Success Message
-        st.success(f"✅ Processed {files_scanned} files. Cleaned {files_cleaned} files. Removed {tus_removed} total segments.")
-        
-        # 4. Zip Results
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-        zip_filename = f"Cleaned_TMX_{timestamp}.zip"
-        zip_path = os.path.join(OUTPUT_DIR, zip_filename)
+        # Start Status Log
+        with st.status("⚙️ Cleaning TMX files...", expanded=True) as status_container:
+            try:
+                # 1. Save Files
+                status_container.write("📂 Saving uploaded files...")
+                for up_file in uploaded_files:
+                    file_path = os.path.join(INPUT_DIR, up_file.name)
+                    with open(file_path, "wb") as f:
+                        f.write(up_file.getbuffer())
+                
+                # 2. Run Cleaning Logic
+                def update_status(msg):
+                    status_container.write(f"⚙️ {msg}")
 
-        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for root, dirs, files in os.walk(OUTPUT_DIR):
-                for file in files:
-                    if file != zip_filename:
-                        file_path = os.path.join(root, file)
-                        # Archive name should be relative to output dir so zip doesn't contain full paths
-                        arcname = os.path.relpath(file_path, OUTPUT_DIR)
-                        zipf.write(file_path, arcname=arcname)
+                files_scanned, files_cleaned, tus_removed = clean_tmx_files(
+                    input_folder=INPUT_DIR,
+                    output_folder=OUTPUT_DIR,
+                    char_threshold=char_threshold,
+                    tag_threshold=tag_threshold,
+                    status_callback=update_status
+                )
+                
+                # 3. Zip Results
+                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+                zip_filename = f"Cleaned_TMX_{timestamp}.zip"
+                zip_path = os.path.join(OUTPUT_DIR, zip_filename)
 
-        # 5. Download Button
-        with open(zip_path, "rb") as fp:
-            st.download_button(
-                label="📦 Download Cleaned Files (ZIP)",
-                data=fp,
-                file_name=zip_filename,
-                mime="application/zip",
-                use_container_width=True
-            )
+                with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                    for root, dirs, files in os.walk(OUTPUT_DIR):
+                        for file in files:
+                            if file != zip_filename:
+                                file_path = os.path.join(root, file)
+                                arcname = os.path.relpath(file_path, OUTPUT_DIR)
+                                zipf.write(file_path, arcname=arcname)
 
-    except Exception as e:
-        status_container.update(label="Error", state="error")
-        st.error(f"An error occurred: {str(e)}")
+                status_container.update(label="Cleaning Complete!", state="complete", expanded=False)
+                
+                # 7. Results Dashboard
+                st.markdown("---")
+                
+                col1, col2, col3 = st.columns(3)
+                col1.metric("Files Scanned", files_scanned)
+                col2.metric("Files Modified", files_cleaned)
+                col3.metric("Segments Removed", tus_removed)
+
+                # 5. Download Button
+                with open(zip_path, "rb") as fp:
+                    st.download_button(
+                        label="📦 Download Cleaned Files (ZIP)",
+                        data=fp,
+                        file_name=zip_filename,
+                        mime="application/zip",
+                        use_container_width=True
+                    )
+
+            except Exception as e:
+                status_container.update(label="Error", state="error")
+                st.error(f"An error occurred: {str(e)}")

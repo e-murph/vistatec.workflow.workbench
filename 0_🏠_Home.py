@@ -18,7 +18,7 @@ set_page_style(
 with st.sidebar:
     st.markdown("---")
     st.caption("🔒 Secured by Azure AD")
-    st.caption("© Vistatec 2026")
+    st.caption("© 2026 Vistatec, Ltd.")
 # ----------------------
 
 # --- HEADER WITH LOGO ---
@@ -64,8 +64,8 @@ st.markdown(
 # ----------------------
 
 st.markdown("""
-### Welcome to the Workflow Workbench utilities hub
-Select a utility from the sidebar to begin.
+### Welcome to the Workflow Workbench utility tool hub
+Select a tool from the sidebar to begin.
 
 ---
 
