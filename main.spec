@@ -40,7 +40,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='ExtractTrackChanges',  # This will be the name of your .exe
+    name='VistatecWorkflowWorkbench',  # This will be the name of your .exe
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
