@@ -41,11 +41,11 @@ def set_page_style(background_image_path=None, footer_image_light_path=None, foo
         }}
         
         header[data-testid="stHeader"] {{
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: #e5e5e7;
         }}
         
         section[data-testid="stSidebar"] {{
-            background-color: #ffffff; 
+            background-color: #e5e5e7; 
             border-right: 2px solid #CFB62C;
         }}
 
