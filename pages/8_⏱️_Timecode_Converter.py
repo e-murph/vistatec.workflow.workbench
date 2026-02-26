@@ -76,7 +76,7 @@ with st.expander("ℹ️ How to use this tool", expanded=True):
     st.markdown("""
     1. **Upload Files:** Drop your `.docx` or `.vtt` files into the uploader below.
     2. **Process:** Click the **Convert Timecodes** button.
-    3. **Download:** Grab the ZIP package containing your updated files.
+    3. **Download:** Download the ZIP package containing your updated files.
     """)
 
 st.warning("⚠️ **CONFIDENTIAL:** For Internal Vistatec Use Only.")
