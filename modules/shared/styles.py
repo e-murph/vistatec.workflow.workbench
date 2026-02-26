@@ -3,9 +3,7 @@ import base64
 import os
 
 def get_base64_of_bin_file(bin_file):
-    """
-    Reads a binary file and converts it to base64 so CSS can use it.
-    """
+    """Reads a binary file and converts it to base64 so CSS can use it."""
     try:
         with open(bin_file, 'rb') as f:
             data = f.read()
@@ -13,10 +11,10 @@ def get_base64_of_bin_file(bin_file):
     except FileNotFoundError:
         return None
 
-def set_page_style(background_image_path=None, footer_image_path=None, logo_path="assets/logo.png"):
+def set_page_style(background_image_path=None, footer_image_light_path=None, footer_image_dark_path=None, logo_path="assets/logo.png"):
     """
     Injects CSS to set a background image, sticky footer, header styling, and sidebar color.
-    Dynamically adapts to Light/Dark mode.
+    Dynamically swaps the footer banner based on Light/Dark mode.
     """
     
     # --- 1. HANDLE SIDEBAR LOGO ---
@@ -26,90 +24,78 @@ def set_page_style(background_image_path=None, footer_image_path=None, logo_path
     # --- 2. CSS STYLING ---
     css = ""
     
-    # 1. Handle Background Image
-    if background_image_path and os.path.exists(background_image_path):
-        bin_str = get_base64_of_bin_file(background_image_path)
-        css += f'''
-        <style>
-            .stApp {{
-                background-image: url("data:image/png;base64,{bin_str}");
-                background-attachment: fixed;
-                background-size: cover;
-            }}
-        </style>
-        '''
+    # Convert images to base64 if they exist
+    bg_b64 = get_base64_of_bin_file(background_image_path) if background_image_path and os.path.exists(background_image_path) else ""
+    
+    # Process both Light and Dark footers
+    footer_light_b64 = get_base64_of_bin_file(footer_image_light_path) if footer_image_light_path and os.path.exists(footer_image_light_path) else ""
+    footer_dark_b64 = get_base64_of_bin_file(footer_image_dark_path) if footer_image_dark_path and os.path.exists(footer_image_dark_path) else footer_light_b64 # Fallback to light if dark is missing
 
-    # 2. Handle Footer/Banner Image, Header, and Sidebar
-    if footer_image_path and os.path.exists(footer_image_path):
-        bin_str = get_base64_of_bin_file(footer_image_path)
+    css += f'''
+    <style>
+        /* --- DEFAULT (LIGHT MODE) --- */
+        .stApp {{
+            background-image: url("data:image/png;base64,{bg_b64}");
+            background-attachment: fixed;
+            background-size: cover;
+        }}
         
-        css += f'''
-        <style>
-            /* Create space at bottom so content isn't covered by footer */
-            .main .block-container {{
-                padding-bottom: 120px; 
+        header[data-testid="stHeader"] {{
+            background-color: rgba(255, 255, 255, 0.8);
+        }}
+        
+        section[data-testid="stSidebar"] {{
+            background-color: #ffffff; 
+            border-right: 2px solid #CFB62C;
+        }}
+
+        .main .block-container {{
+            padding-bottom: 120px; 
+        }}
+        
+        /* The Fixed Footer - Defaults to Light Banner */
+        .footer-container {{
+            position: fixed;
+            bottom: 0; left: 0; width: 100%; height: 60px; 
+            background-color: #ffffff; 
+            background-image: url("data:image/png;base64,{footer_light_b64}");
+            background-size: contain; 
+            background-position: center; 
+            background-repeat: no-repeat;
+            z-index: 999;
+            border-top: 2px solid #55565a;
+        }}
+        
+        [data-testid="stSidebar"] {{
+            z-index: 1000;
+        }}
+
+        /* --- DARK MODE OVERRIDES --- */
+        @media (prefers-color-scheme: dark) {{
+            /* Darken the main background image so white text is readable */
+            .stApp {{
+                background-image: linear-gradient(rgba(14, 17, 23, 0.85), rgba(14, 17, 23, 0.85)), url("data:image/png;base64,{bg_b64}");
             }}
             
-            /* --- DEFAULT (LIGHT MODE) STYLES --- */
-            
-            /* The Fixed Footer */
-            .footer-container {{
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                height: 60px; 
-                
-                background-color: #ffffff; 
-                background-image: url("data:image/png;base64,{bin_str}");
-                background-size: contain;
-                background-position: center;
-                background-repeat: no-repeat;
-                
-                /* Z-Index 999 puts it BEHIND the sidebar (which is 1000) */
-                z-index: 999;
-                border-top: 2px solid #55565a;
-                
-                transition: left 0.3s ease, width 0.3s ease;
-            }}
-            
-            /* Top Header */
             header[data-testid="stHeader"] {{
-                background-color: #e5e5e7;
+                background-color: rgba(14, 17, 23, 0.9) !important;
             }}
             
-            /* Sidebar */
             section[data-testid="stSidebar"] {{
-                background-color: #e5e5e7; 
-                border-right: 2px solid #CFB62C;
+                background-color: #0e1117 !important; 
+                border-right: 2px solid #CFB62C !important;
             }}
 
-            /* Ensure Sidebar sits on top of footer */
-            [data-testid="stSidebar"] {{
-                z-index: 1000;
+            /* Swap the Footer to the Dark Banner */
+            .footer-container {{
+                background-color: #0e1117 !important;
+                background-image: url("data:image/png;base64,{footer_dark_b64}") !important;
+                border-top: 2px solid #CFB62C !important;
             }}
-
-            /* --- DARK MODE OVERRIDES --- */
-            /* If the user is using Dark Mode, swap the hardcoded light colors for Streamlit variables */
-            @media (prefers-color-scheme: dark) {{
-                .footer-container {{
-                    background-color: var(--background-color);
-                    border-top: 2px solid #CFB62C; /* Change border to gold so it pops against dark mode */
-                }}
-                
-                header[data-testid="stHeader"] {{
-                    background-color: var(--background-color);
-                }}
-                
-                section[data-testid="stSidebar"] {{
-                    /* Uses Streamlit's native dark sidebar color */
-                    background-color: var(--secondary-background-color);
-                    border-right: 2px solid #CFB62C;
-                }}
-            }}
-        </style>
-        <div class="footer-container"></div>
-        '''
+        }}
+    </style>
+    <div class="footer-container"></div>
+    '''
     
     if css:
         st.markdown(css, unsafe_allow_html=True)

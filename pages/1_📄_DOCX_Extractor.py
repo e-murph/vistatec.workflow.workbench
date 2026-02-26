@@ -15,7 +15,8 @@ st.set_page_config(
 # --- APPLY STYLING ---
 set_page_style(
     background_image_path="assets/background.jpg",
-    footer_image_path="assets/banner.png"
+    footer_image_light_path="assets/banner_light.png",
+    footer_image_dark_path="assets/banner_dark.png"
 )
 
 # 2. Custom CSS (Updated for Light/Dark Mode compatibility)
@@ -123,7 +124,7 @@ if uploaded_files:
                 all_changes.append((uploaded_file.name, original, edited, html))
                 
         # Mark as complete
-        status.update(label="✅ Processing Complete!", state="complete", expanded=False)
+        status.update(label="✅ Processing Complete!", state="complete", expanded=True)
 
     # 7. Results Dashboard
     st.markdown("---")

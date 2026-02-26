@@ -13,7 +13,8 @@ st.set_page_config(
 # --- APPLY STYLING ---
 set_page_style(
     background_image_path="assets/background.jpg",
-    footer_image_path="assets/banner.png"
+    footer_image_light_path="assets/banner_light.png",
+    footer_image_dark_path="assets/banner_dark.png"
 )
 
 # 2. Custom CSS (Updated for Light/Dark Mode compatibility)

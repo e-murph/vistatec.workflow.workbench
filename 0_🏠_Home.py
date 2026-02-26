@@ -10,7 +10,8 @@ st.set_page_config(
 # --- APPLY STYLING ---
 set_page_style(
     background_image_path="assets/background.jpg",
-    footer_image_path="assets/banner.png"
+    footer_image_light_path="assets/banner_light.png",
+    footer_image_dark_path="assets/banner_dark.png"
 )
 # ---------------------------
 
@@ -74,6 +75,7 @@ Select a tool from the sidebar to begin.
 * **🪓 TMX TU Remover:** Remove bloated translation units based on length or tag density.
 * **🧹 Flare Cleaner:** Cleans MadCap Flare files and fixes errors caused by XTM filters.
 * **🔐 Password Generator:** Create cryptographically secure passwords locally.
+* **⏱️ Timecode Converter:** Convert raw decimal timecodes in DOCX and VTT files into (MM:SS) format.
 
 ---
 **Security Notice:**

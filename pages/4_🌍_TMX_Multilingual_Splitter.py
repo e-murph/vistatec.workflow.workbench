@@ -16,7 +16,8 @@ st.set_page_config(
 # --- APPLY STYLING ---
 set_page_style(
     background_image_path="assets/background.jpg",
-    footer_image_path="assets/banner.png"
+    footer_image_light_path="assets/banner_light.png",
+    footer_image_dark_path="assets/banner_dark.png"
 )
 
 # 2. Custom CSS (Updated for Light/Dark Mode compatibility)
@@ -147,7 +148,7 @@ if uploaded_file:
                             if file != zip_filename:
                                 zipf.write(os.path.join(root, file), arcname=file)
 
-                status.update(label="✅ Splitting Complete!", state="complete", expanded=False)
+                status.update(label="✅ Splitting Complete!", state="complete", expanded=True)
 
                 # 7. Results Dashboard
                 st.markdown("---")
