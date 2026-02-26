@@ -39,9 +39,6 @@ st.markdown(
         .header-logo {{
             width: 50px;       /* Adjust size here */
             margin-right: 20px; /* Space between logo and text */
-            
-            /* OPTIONAL: If it still looks 'too high', add top margin to push it down */
-            /* margin-top: 10px; */ 
         }}
         
         /* The Title Text */

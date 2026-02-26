@@ -20,11 +20,15 @@ set_page_style(
     footer_image_path="assets/banner.png"
 )
 
-# 2. Custom CSS
+# 2. Custom CSS (Updated for Light/Dark Mode compatibility)
 st.markdown("""
 <style>
     .block-container {padding-top: 2rem;}
-    h1 {color: #0056b3;}
+    
+    /* --- DEFAULT (LIGHT MODE) STYLES --- */
+    h1 {
+        color: #0056b3;
+    }
     .stButton>button {
         width: 100%;
         background-color: #0056b3;
@@ -33,6 +37,21 @@ st.markdown("""
     .streamlit-expanderHeader {
         font-weight: bold;
         color: #0056b3;
+    }
+
+    /* --- DARK MODE OVERRIDES --- */
+    /* When the browser is in Dark Mode, apply these lighter colors instead */
+    @media (prefers-color-scheme: dark) {
+        h1 {
+            color: #66b2ff; /* Lighter, highly visible blue */
+        }
+        .stButton>button {
+            background-color: #66b2ff;
+            color: #000000; /* Dark text on the light blue button for contrast */
+        }
+        .streamlit-expanderHeader {
+            color: #66b2ff;
+        }
     }
 </style>
 """, unsafe_allow_html=True)

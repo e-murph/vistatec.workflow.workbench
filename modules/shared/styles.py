@@ -16,6 +16,7 @@ def get_base64_of_bin_file(bin_file):
 def set_page_style(background_image_path=None, footer_image_path=None, logo_path="assets/logo.png"):
     """
     Injects CSS to set a background image, sticky footer, header styling, and sidebar color.
+    Dynamically adapts to Light/Dark mode.
     """
     
     # --- 1. HANDLE SIDEBAR LOGO ---
@@ -38,15 +39,18 @@ def set_page_style(background_image_path=None, footer_image_path=None, logo_path
         </style>
         '''
 
-    # 2. Handle Footer/Banner Image
+    # 2. Handle Footer/Banner Image, Header, and Sidebar
     if footer_image_path and os.path.exists(footer_image_path):
         bin_str = get_base64_of_bin_file(footer_image_path)
+        
         css += f'''
         <style>
             /* Create space at bottom so content isn't covered by footer */
             .main .block-container {{
                 padding-bottom: 120px; 
             }}
+            
+            /* --- DEFAULT (LIGHT MODE) STYLES --- */
             
             /* The Fixed Footer */
             .footer-container {{
@@ -67,42 +71,44 @@ def set_page_style(background_image_path=None, footer_image_path=None, logo_path
                 border-top: 2px solid #55565a;
                 
                 transition: left 0.3s ease, width 0.3s ease;
-                
-                left: 0;
-                width: 100%;
             }}
             
-            /* NOTE: Media Query removed. The footer now stays full width, 
-               and the sidebar simply covers the left side of it. */
+            /* Top Header */
+            header[data-testid="stHeader"] {{
+                background-color: #e5e5e7;
+            }}
+            
+            /* Sidebar */
+            section[data-testid="stSidebar"] {{
+                background-color: #e5e5e7; 
+                border-right: 2px solid #CFB62C;
+            }}
 
             /* Ensure Sidebar sits on top of footer */
             [data-testid="stSidebar"] {{
                 z-index: 1000;
             }}
+
+            /* --- DARK MODE OVERRIDES --- */
+            /* If the user is using Dark Mode, swap the hardcoded light colors for Streamlit variables */
+            @media (prefers-color-scheme: dark) {{
+                .footer-container {{
+                    background-color: var(--background-color);
+                    border-top: 2px solid #CFB62C; /* Change border to gold so it pops against dark mode */
+                }}
+                
+                header[data-testid="stHeader"] {{
+                    background-color: var(--background-color);
+                }}
+                
+                section[data-testid="stSidebar"] {{
+                    /* Uses Streamlit's native dark sidebar color */
+                    background-color: var(--secondary-background-color);
+                    border-right: 2px solid #CFB62C;
+                }}
+            }}
         </style>
         <div class="footer-container"></div>
-        '''
-
-    # 3. Handle Top Header Styling (NEW)
-    # This targets the fixed header bar at the top of the page
-        css += '''
-        <style>
-            /* Top Header: Transparent */
-            header[data-testid="stHeader"] {
-                /* Option A: Transparent (shows your background image) */
-                /* background-color: rgba(0,0,0,0);
-            
-                /* Option B: Custom Color (e.g., White or Corporate Blue) */
-                background-color: #e5e5e7; */
-            }
-            /* Sidebar: Custom Background Color */
-            section[data-testid="stSidebar"] {
-                background-color: #e5e5e7; /* Change this Hex Code to your preferred color */
-            
-                /* Optional: Add a border to separate it from the main content */
-                border-right: 2px solid #CFB62C;
-            }
-        </style>
         '''
     
     if css:
