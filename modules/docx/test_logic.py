@@ -22,7 +22,7 @@ under the License.
 
 
 import pytest
-from docx_logic import clean_text
+from modules.docx.docx_logic import clean_text
 
 def test_clean_text_removes_null_bytes():
     # Test that invisible control characters are removed
