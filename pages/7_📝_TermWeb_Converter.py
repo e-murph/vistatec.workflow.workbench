@@ -4,12 +4,12 @@ import shutil
 import zipfile
 from datetime import datetime
 from modules.shared.styles import set_page_style
-from modules.timecode.timecode_logic import process_docx, process_vtt
+from modules.termweb.termweb_logic import parse_xml_to_xlsx
 
 # 1. Page Config
 st.set_page_config(
-    page_title="Timecode Converter", 
-    page_icon="⏱️", 
+    page_title="TermWeb QA Converter", 
+    page_icon="📝", 
     layout="wide"
 )
 
@@ -55,8 +55,8 @@ st.markdown("""
 with st.sidebar:
     st.header("⚙️ Settings")
     if st.button("🚮 Clear Temp Files"):
-        if os.path.exists("temp_timecode_input"): shutil.rmtree("temp_timecode_input")
-        if os.path.exists("temp_timecode_output"): shutil.rmtree("temp_timecode_output")
+        if os.path.exists("temp_termweb_input"): shutil.rmtree("temp_termweb_input")
+        if os.path.exists("temp_termweb_output"): shutil.rmtree("temp_termweb_output")
         st.toast("Temporary files cleared successfully!", icon="🧹")
         
     st.markdown("---")
@@ -64,19 +64,19 @@ with st.sidebar:
     st.caption("© 2026 Vistatec, Ltd.")
 
 # 4. Main Content Area
-st.title("⏱️ Timecode Converter")
+st.title("📝 TermWeb XML to Excel QA Converter")
 
 # A. Description
 st.markdown("""
-**Convert raw timecodes into readable (MM:SS) formats.** This tool scans subtitle files (`.vtt`) or transcripts (`.docx`), identifies raw decimal timecodes, and replaces them with a clean minute/second format.
+**Convert TermWeb XML files into actionable Excel QA reports.** This tool aligns source and target terms, scores accuracy using a lexical matching algorithm, and generates up to 6 distinct filtered Excel reports for review.
 """)
 
 # B. Instructions
 with st.expander("ℹ️ How to use this tool", expanded=True):
     st.markdown("""
-    1. **Upload Files:** Drop your `.docx` or `.vtt` files into the uploader below.
-    2. **Process:** Click the **Convert Timecodes** button.
-    3. **Download:** Save the ZIP package containing your updated files.
+    1. **Upload Files:** Drop your TermWeb `.xml` files into the uploader below.
+    2. **Process:** Click the **Generate QA Reports** button.
+    3. **Download:** Save a ZIP file containing the formatted Excel reports (Full, Preferred Only, Perfect Matches, Missing Targets, etc.).
     """)
 
 st.warning("⚠️ **CONFIDENTIAL:** For Internal Vistatec Use Only.")
@@ -84,49 +84,42 @@ st.markdown("---")
 
 # 5. File Uploader
 uploaded_files = st.file_uploader(
-    "📂 Upload Files", 
-    type=["docx", "vtt"],
+    "📂 Upload TermWeb XML Files", 
+    type=["xml"],
     accept_multiple_files=True
 )
 
 # 6. Processing Logic
 if uploaded_files:
-    if st.button("🚀 Convert Timecodes", type="primary"):
+    if st.button("🚀 Generate QA Reports", type="primary"):
         
-        TEMP_INPUT = "temp_timecode_input"
-        TEMP_OUTPUT = "temp_timecode_output"
+        TEMP_INPUT = "temp_termweb_input"
+        TEMP_OUTPUT = "temp_termweb_output"
         
         # Clean/Create Dirs
         if os.path.exists(TEMP_INPUT): shutil.rmtree(TEMP_INPUT)
         if os.path.exists(TEMP_OUTPUT): shutil.rmtree(TEMP_OUTPUT)
         os.makedirs(TEMP_INPUT, exist_ok=True)
-        os.makedirs(OUTPUT_DIR := TEMP_OUTPUT, exist_ok=True)
+        os.makedirs(TEMP_OUTPUT, exist_ok=True)
         
         # Start Status Log
-        with st.status("⚙️ Converting files...", expanded=True) as status:
+        with st.status("⚙️ Processing TermWeb files...", expanded=True) as status:
             try:
-                # Process files
                 for uploaded_file in uploaded_files:
-                    status.update(label=f"Processing: {uploaded_file.name}...")
+                    status.update(label=f"Analyzing: {uploaded_file.name}...")
                     
                     # Save input
                     input_path = os.path.join(TEMP_INPUT, uploaded_file.name)
                     with open(input_path, "wb") as f:
                         f.write(uploaded_file.getbuffer())
                     
-                    # Determine output path
-                    output_path = os.path.join(TEMP_OUTPUT, f"Converted_{uploaded_file.name}")
-                    
-                    # Route to correct processing function
-                    if uploaded_file.name.endswith('.docx'):
-                        process_docx(input_path, output_path)
-                    elif uploaded_file.name.endswith('.vtt'):
-                        process_vtt(input_path, output_path)
+                    # Process file (generates multiple XLSX files in TEMP_OUTPUT)
+                    parse_xml_to_xlsx(input_path, TEMP_OUTPUT)
 
                 # Zip Results
-                status.write("📦 Packaging converted files...")
+                status.write("📦 Packaging Excel reports...")
                 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-                zip_filename = f"Converted_Timecodes_{timestamp}.zip"
+                zip_filename = f"TermWeb_QA_Reports_{timestamp}.zip"
                 zip_path = os.path.join(TEMP_OUTPUT, zip_filename)
 
                 with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
@@ -136,18 +129,21 @@ if uploaded_files:
                                 file_path = os.path.join(root, file)
                                 zipf.write(file_path, arcname=file)
 
-                status.update(label="✅ Conversion Complete!", state="complete", expanded=True)
+                status.update(label="✅ QA Reports Generated!", state="complete", expanded=True)
 
                 # 7. Results Dashboard
                 st.markdown("---")
                 
+                # Count total number of excel files generated
+                generated_files = [f for f in os.listdir(TEMP_OUTPUT) if f.endswith('.xlsx')]
+                
                 col1, col2 = st.columns(2)
-                col1.metric("Files Processed", len(uploaded_files))
-                col2.success("Ready for Download")
+                col1.metric("XML Files Processed", len(uploaded_files))
+                col2.metric("Excel Reports Created", len(generated_files))
 
                 with open(zip_path, "rb") as fp:
                     st.download_button(
-                        label="📥 Download Converted Files (ZIP)",
+                        label="📥 Download Excel Reports (ZIP)",
                         data=fp,
                         file_name=zip_filename,
                         mime="application/zip",

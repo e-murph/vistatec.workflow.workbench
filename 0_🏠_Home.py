@@ -74,8 +74,10 @@ Select a tool from the sidebar to begin.
 * **🌍 TMX Multilingual Splitter:** Extract specific language pairs from large multilingual TMX files.
 * **🪓 TMX TU Remover:** Remove bloated translation units based on length or tag density.
 * **🧹 Flare Cleaner:** Cleans MadCap Flare files and fixes errors caused by XTM filters.
-* **🔐 Password Generator:** Create cryptographically secure passwords locally.
+* **📝 TermWeb QA Converter:** Convert TermWeb XML exports into scored and filtered Excel QA reports. 
 * **⏱️ Timecode Converter:** Convert raw decimal timecodes in DOCX and VTT files into (MM:SS) format.
+* **🗄️ XLSX to CSV Converter:** Batch convert Excel files into CSV format.
+* **🔐 Password Generator:** Create cryptographically secure passwords locally.
 
 ---
 **Security Notice:**

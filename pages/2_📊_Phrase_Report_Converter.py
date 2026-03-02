@@ -85,7 +85,7 @@ with st.expander("ℹ️ How to use this tool", expanded=True):
     1. **Upload Files:** Select one or multiple Phrase Analysis `.csv` files.
     2. **Process:** Click the **Start Processing** button.
     3. **Review:** Status log runs as files are converted.
-    4. **Download:** Download the final ZIP package containing all Excel reports.
+    4. **Download:** Save the final ZIP package containing all Excel reports.
     """)
 
 st.warning("⚠️ **CONFIDENTIAL:** For Internal Vistatec Use Only.")

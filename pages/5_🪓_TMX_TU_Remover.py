@@ -85,7 +85,7 @@ with st.expander("ℹ️ How to use this tool", expanded=True):
     1. **Configure Thresholds:** Set the maximum allowed characters and tags per segment.
     2. **Upload Files:** Select one or multiple TMX files.
     3. **Process:** Click **Run Cleaner**.
-    4. **Download:** Download a ZIP containing the cleaned TMX files and a detailed report.
+    4. **Download:** Save a ZIP containing the cleaned TMX files and a detailed report.
     """)
 
 st.warning("⚠️ **CONFIDENTIAL:** For Internal Vistatec Use Only.")

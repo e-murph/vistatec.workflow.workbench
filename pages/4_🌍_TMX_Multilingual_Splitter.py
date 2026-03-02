@@ -85,7 +85,7 @@ with st.expander("ℹ️ How to use this tool", expanded=True):
     1. **Upload File:** Select a Multilingual TMX file.
     2. **Process:** Click **Split TMX** to begin extraction.
     3. **Review:** The tool will list every language pair detected.
-    4. **Download:** Download a ZIP package containing all the separated files.
+    4. **Download:** Save a ZIP package containing all the separated files.
     """)
 
 st.warning("⚠️ **CONFIDENTIAL:** For Internal Vistatec Use Only.")

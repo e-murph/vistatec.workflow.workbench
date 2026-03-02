@@ -4,12 +4,12 @@ import shutil
 import zipfile
 from datetime import datetime
 from modules.shared.styles import set_page_style
-from modules.timecode.timecode_logic import process_docx, process_vtt
+from modules.converter.xlsx_to_csv_logic import process_xlsx_to_csv
 
 # 1. Page Config
 st.set_page_config(
-    page_title="Timecode Converter", 
-    page_icon="⏱️", 
+    page_title="XLSX to CSV Converter", 
+    page_icon="🗄️", 
     layout="wide"
 )
 
@@ -20,7 +20,7 @@ set_page_style(
     footer_image_dark_path="assets/banner_dark.png"
 )
 
-# 2. Custom CSS (Light/Dark Mode compatible)
+# 2. Custom CSS
 st.markdown("""
 <style>
     .block-container {padding-top: 2rem;}
@@ -55,8 +55,8 @@ st.markdown("""
 with st.sidebar:
     st.header("⚙️ Settings")
     if st.button("🚮 Clear Temp Files"):
-        if os.path.exists("temp_timecode_input"): shutil.rmtree("temp_timecode_input")
-        if os.path.exists("temp_timecode_output"): shutil.rmtree("temp_timecode_output")
+        if os.path.exists("temp_xlsx_input"): shutil.rmtree("temp_xlsx_input")
+        if os.path.exists("temp_csv_output"): shutil.rmtree("temp_csv_output")
         st.toast("Temporary files cleared successfully!", icon="🧹")
         
     st.markdown("---")
@@ -64,19 +64,19 @@ with st.sidebar:
     st.caption("© 2026 Vistatec, Ltd.")
 
 # 4. Main Content Area
-st.title("⏱️ Timecode Converter")
+st.title("🗄️ Batch XLSX to CSV Converter")
 
 # A. Description
 st.markdown("""
-**Convert raw timecodes into readable (MM:SS) formats.** This tool scans subtitle files (`.vtt`) or transcripts (`.docx`), identifies raw decimal timecodes, and replaces them with a clean minute/second format.
+**Instantly convert bulk Excel files (.xlsx) to CSV format.** Upload a batch of Excel files, and the tool will parse them and package the resulting CSVs into a single ZIP file for download.
 """)
 
 # B. Instructions
 with st.expander("ℹ️ How to use this tool", expanded=True):
     st.markdown("""
-    1. **Upload Files:** Drop your `.docx` or `.vtt` files into the uploader below.
-    2. **Process:** Click the **Convert Timecodes** button.
-    3. **Download:** Save the ZIP package containing your updated files.
+    1. **Upload Files:** Drag and drop your batch of `.xlsx` files into the uploader below.
+    2. **Process:** Click **Convert to CSV**.
+    3. **Download:** Save the packaged ZIP file containing your new CSVs.
     """)
 
 st.warning("⚠️ **CONFIDENTIAL:** For Internal Vistatec Use Only.")
@@ -84,55 +84,62 @@ st.markdown("---")
 
 # 5. File Uploader
 uploaded_files = st.file_uploader(
-    "📂 Upload Files", 
-    type=["docx", "vtt"],
+    "📂 Upload XLSX Files", 
+    type=["xlsx"],
     accept_multiple_files=True
 )
 
 # 6. Processing Logic
 if uploaded_files:
-    if st.button("🚀 Convert Timecodes", type="primary"):
+    if st.button("🚀 Convert to CSV", type="primary"):
         
-        TEMP_INPUT = "temp_timecode_input"
-        TEMP_OUTPUT = "temp_timecode_output"
+        TEMP_INPUT = "temp_xlsx_input"
+        TEMP_OUTPUT = "temp_csv_output"
         
         # Clean/Create Dirs
         if os.path.exists(TEMP_INPUT): shutil.rmtree(TEMP_INPUT)
         if os.path.exists(TEMP_OUTPUT): shutil.rmtree(TEMP_OUTPUT)
         os.makedirs(TEMP_INPUT, exist_ok=True)
-        os.makedirs(OUTPUT_DIR := TEMP_OUTPUT, exist_ok=True)
+        os.makedirs(TEMP_OUTPUT, exist_ok=True)
+        
+        success_count = 0
+        fail_count = 0
         
         # Start Status Log
         with st.status("⚙️ Converting files...", expanded=True) as status:
-            try:
-                # Process files
-                for uploaded_file in uploaded_files:
-                    status.update(label=f"Processing: {uploaded_file.name}...")
-                    
-                    # Save input
-                    input_path = os.path.join(TEMP_INPUT, uploaded_file.name)
-                    with open(input_path, "wb") as f:
-                        f.write(uploaded_file.getbuffer())
-                    
-                    # Determine output path
-                    output_path = os.path.join(TEMP_OUTPUT, f"Converted_{uploaded_file.name}")
-                    
-                    # Route to correct processing function
-                    if uploaded_file.name.endswith('.docx'):
-                        process_docx(input_path, output_path)
-                    elif uploaded_file.name.endswith('.vtt'):
-                        process_vtt(input_path, output_path)
+            
+            for uploaded_file in uploaded_files:
+                status.update(label=f"Converting: {uploaded_file.name}...")
+                
+                # Save input
+                input_path = os.path.join(TEMP_INPUT, uploaded_file.name)
+                with open(input_path, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+                
+                # Determine output path (.csv instead of .xlsx)
+                base_name = os.path.splitext(uploaded_file.name)[0]
+                output_path = os.path.join(TEMP_OUTPUT, f"{base_name}.csv")
+                
+                # Process file
+                success, error_msg = process_xlsx_to_csv(input_path, output_path)
+                
+                if success:
+                    success_count += 1
+                else:
+                    fail_count += 1
+                    st.error(f"Failed to convert {uploaded_file.name}: {error_msg}")
 
-                # Zip Results
-                status.write("📦 Packaging converted files...")
+            # Zip Results
+            if success_count > 0:
+                status.write("📦 Packaging CSVs...")
                 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-                zip_filename = f"Converted_Timecodes_{timestamp}.zip"
+                zip_filename = f"Converted_CSVs_{timestamp}.zip"
                 zip_path = os.path.join(TEMP_OUTPUT, zip_filename)
 
                 with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
                     for root, dirs, files in os.walk(TEMP_OUTPUT):
                         for file in files:
-                            if file != zip_filename:
+                            if file.endswith('.csv'):
                                 file_path = os.path.join(root, file)
                                 zipf.write(file_path, arcname=file)
 
@@ -141,19 +148,19 @@ if uploaded_files:
                 # 7. Results Dashboard
                 st.markdown("---")
                 
-                col1, col2 = st.columns(2)
-                col1.metric("Files Processed", len(uploaded_files))
-                col2.success("Ready for Download")
+                col1, col2, col3 = st.columns(3)
+                col1.metric("Files Uploaded", len(uploaded_files))
+                col2.metric("Successfully Converted", success_count)
+                col3.metric("Failed", fail_count)
 
                 with open(zip_path, "rb") as fp:
                     st.download_button(
-                        label="📥 Download Converted Files (ZIP)",
+                        label="📥 Download Converted CSVs (ZIP)",
                         data=fp,
                         file_name=zip_filename,
                         mime="application/zip",
                         use_container_width=True
                     )
-
-            except Exception as e:
-                status.update(label="Processing Failed", state="error")
-                st.error(f"An error occurred: {str(e)}")
+            else:
+                status.update(label="❌ Conversion Failed", state="error", expanded=True)
+                st.error("No files were successfully converted.")

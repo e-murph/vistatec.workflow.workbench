@@ -87,7 +87,7 @@ with st.expander("ℹ️ How to use this tool", expanded=True):
     1. **Configuration:** Select the target language (this determines which cleaning rules are applied).
     2. **Upload:** Select your Flare files (`.html`, `.fltoc`, `.flsnp`, etc.).
     3. **Process:** Click **Run Cleaner**.
-    4. **Download:** Download a ZIP containing the repaired files.
+    4. **Download:** Save a ZIP containing the repaired files.
     """)
 
 st.warning("⚠️ **CONFIDENTIAL:** For Internal Vistatec Use Only.")
