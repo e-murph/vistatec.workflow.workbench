@@ -1,6 +1,7 @@
 import os
 from google import genai
 import json
+import re
 
 def batch_ai_term_review(terms_to_review, lang1, lang2):
     """
@@ -9,9 +10,8 @@ def batch_ai_term_review(terms_to_review, lang1, lang2):
     """
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        return {} # Fails silently and safely if no key is found
+        return {} 
 
-    # NEW SDK INITIALIZATION
     client = genai.Client(api_key=api_key)
 
     # Prepare the payload for the prompt
@@ -39,16 +39,22 @@ def batch_ai_term_review(terms_to_review, lang1, lang2):
     """
 
     try:
-        # NEW SDK GENERATE CONTENT CALL
         response = client.models.generate_content(
             model='gemini-2.5-flash-lite',
             contents=prompt
         )
         
-        # Clean the response to ensure it parses as JSON
-        response_text = response.text.replace("```json", "").replace("```", "").strip()
-        ai_insights = json.loads(response_text)
-        return ai_insights
+        # JSON extraction using Regex
+        response_text = response.text
+        json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+        
+        if json_match:
+            ai_insights = json.loads(json_match.group(0))
+            return ai_insights
+        else:
+            print("AI Error: No JSON block found in response.")
+            return {}
+            
     except Exception as e:
         print(f"AI Error: {e}")
         return {}

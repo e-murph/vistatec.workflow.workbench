@@ -146,7 +146,9 @@ def parse_xml_to_xlsx(xml_file, out_dir, enable_ai=False):
 
     lang1, lang2 = get_languages(root)
 
-    # --- AI ADD-ON: Added 'AI Notes' to headers ---
+    # --- MEMORY CACHE TO PREVENT DUPLICATE AI CALLS ---
+    ai_memory_cache = {}
+
     headers = [
         'termEntry id',
         lang1, 'tig id', 'administrativeStatus', 'termType',
@@ -288,7 +290,7 @@ def parse_xml_to_xlsx(xml_file, out_dir, enable_ai=False):
         if not data_rows and filter_mode in ['perfect_match', 'imperfect_match', 'missing_target']:
             return
 
-        # --- AI ADD-ON: Intercept the data and run the AI batch before writing to Excel ---
+        # --- AI CACHING & BATCH PROCESSING ---
         if enable_ai and filter_mode in ['imperfect_match', 'none', 'missing_target']:
             ai_batch = []
             row_map = {} # Map global batch index to actual Excel row index
@@ -300,24 +302,32 @@ def parse_xml_to_xlsx(xml_file, out_dir, enable_ai=False):
                 score = int(score_str) if score_str.isdigit() else 100
                 
                 if (score < 100 and t1 and t2) or (t1 and missing_def):
-                    row_map[str(len(ai_batch))] = r_idx
-                    ai_batch.append({'t1': t1, 't2': t2, 'missing_def': missing_def})
+                    # Create a unique key for the dictionary cache
+                    cache_key = f"{t1}|{t2}|{missing_def}"
+                    
+                    if cache_key in ai_memory_cache:
+                        # If we already asked the AI about this pair, use the cached answer!
+                        data_rows[r_idx][11] = ai_memory_cache[cache_key]
+                    else:
+                        row_map[str(len(ai_batch))] = r_idx
+                        ai_batch.append({'t1': t1, 't2': t2, 'missing_def': missing_def, 'cache_key': cache_key})
             
-            # 2. Process them in safe chunks of 50 to prevent API timeouts/truncation
             if ai_batch:
-                chunk_size = 50
+                chunk_size = 20 # Lowered to 20 to prevent LLM truncation crashes
                 for i in range(0, len(ai_batch), chunk_size):
                     chunk = ai_batch[i:i + chunk_size]
                     
-                    # Send this specific chunk to Gemini
                     ai_insights = batch_ai_term_review(chunk, lang1, lang2)
                     
-                    # Map the local chunk answers back to the global Excel rows
                     for local_id, insight in ai_insights.items():
                         global_id = str(i + int(local_id))
                         if global_id in row_map:
                             actual_row_idx = row_map[global_id]
-                            data_rows[actual_row_idx][11] = insight # Add to AI Notes column
+                            data_rows[actual_row_idx][11] = insight 
+                            
+                            # Save the new insight to our cache for the next Excel file
+                            cache_key = ai_batch[int(global_id)]['cache_key']
+                            ai_memory_cache[cache_key] = insight
         # --- END AI ADD-ON ---
 
         for row in data_rows:
@@ -343,6 +353,7 @@ def parse_xml_to_xlsx(xml_file, out_dir, enable_ai=False):
 
         wb.save(filepath)
 
+    # 6 Reports are generated here
     write_to_excel(full_xlsx_path, filter_mode='none')
     write_to_excel(filtered_xlsx_path, filter_mode='exclude_not_recommended')
     write_to_excel(preferred_xlsx_path, filter_mode='only_preferred')
