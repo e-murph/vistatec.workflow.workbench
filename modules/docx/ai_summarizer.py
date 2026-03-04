@@ -39,7 +39,7 @@ def generate_executive_summary(all_changes):
     # 5. Call the LLM using the new syntax
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.5-flash-lite',
             contents=prompt
         )
         return response.text

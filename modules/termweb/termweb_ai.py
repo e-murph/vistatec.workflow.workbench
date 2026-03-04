@@ -41,7 +41,7 @@ def batch_ai_term_review(terms_to_review, lang1, lang2):
     try:
         # NEW SDK GENERATE CONTENT CALL
         response = client.models.generate_content(
-            model='gemini-2.5-flash',
+            model='gemini-2.5-flash-lite',
             contents=prompt
         )
         
