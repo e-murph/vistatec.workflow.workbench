@@ -4,6 +4,9 @@ import xml.etree.ElementTree as ET
 import openpyxl
 from openpyxl.styles import Font, Alignment
 
+# IMPORT THE NEW AI MODULE
+from modules.termweb.termweb_ai import batch_ai_term_review
+
 def get_languages(root):
     """Scans the XML to find the first two unique language codes."""
     langs = []
@@ -37,7 +40,7 @@ def align_terms(list1, list2):
         if t1_status == t2_status and t1_status != '':
             qa_score += 20
 
-            # 2. Term Type Match
+        # 2. Term Type Match
         t1_type = t1.get('term_type', '')
         t2_type = t2.get('term_type', '')
         SHORT_TYPES = {'abbreviation', 'shortForm', 'acronym'}
@@ -124,8 +127,8 @@ def get_tig_num(item):
         return int(parts[-1])
     return 999999
 
-
-def parse_xml_to_xlsx(xml_file, out_dir):
+# --- AI ADD-ON: Added enable_ai parameter ---
+def parse_xml_to_xlsx(xml_file, out_dir, enable_ai=False):
     """Parses a TermWeb XML file and generates multiple QA Excel reports."""
     filename = os.path.basename(xml_file)
     base_name = os.path.splitext(filename)[0]
@@ -143,11 +146,12 @@ def parse_xml_to_xlsx(xml_file, out_dir):
 
     lang1, lang2 = get_languages(root)
 
+    # --- AI ADD-ON: Added 'AI Notes' to headers ---
     headers = [
         'termEntry id',
         lang1, 'tig id', 'administrativeStatus', 'termType',
         lang2, 'tig id', 'administrativeStatus', 'termType',
-        'definition', 'Accuracy Score'
+        'definition', 'Accuracy Score', 'AI Notes'
     ]
 
     def extract_rows(filter_mode='none'):
@@ -232,7 +236,8 @@ def parse_xml_to_xlsx(xml_file, out_dir):
                 continue
 
             if max_len == 0:
-                rows.append([entry_id, '', '', '', '', '', '', '', '', definition, ''])
+                # --- AI ADD-ON: Added extra blank space for AI column ---
+                rows.append([entry_id, '', '', '', '', '', '', '', '', definition, '', ''])
                 continue
 
             for i in range(max_len):
@@ -246,7 +251,11 @@ def parse_xml_to_xlsx(xml_file, out_dir):
 
                 # Second language data + Score unpacking
                 t2_tuple = list2_aligned[i] if i < len(list2_aligned) else (None, 0)
-                t2_term = t2_tuple[0]
+                if t2_tuple[0]:
+                    t2_term = t2_tuple[0]
+                else:
+                    t2_term = None
+                    
                 match_score = t2_tuple[1]
 
                 if t2_term:
@@ -260,6 +269,9 @@ def parse_xml_to_xlsx(xml_file, out_dir):
                     row.append(f"{match_score}%")
                 else:
                     row.append("")
+                    
+                # --- AI ADD-ON: Append blank placeholder for AI Notes ---
+                row.append("")
 
                 rows.append(row)
 
@@ -275,6 +287,38 @@ def parse_xml_to_xlsx(xml_file, out_dir):
         data_rows = extract_rows(filter_mode)
         if not data_rows and filter_mode in ['perfect_match', 'imperfect_match', 'missing_target']:
             return
+
+        # --- AI ADD-ON: Intercept the data and run the AI batch before writing to Excel ---
+        if enable_ai and filter_mode in ['imperfect_match', 'none', 'missing_target']:
+            ai_batch = []
+            row_map = {} # Map global batch index to actual Excel row index
+            
+            # 1. Gather ALL rows that need AI review (No more 50 limit!)
+            for r_idx, row in enumerate(data_rows):
+                t1, t2, missing_def = row[1], row[5], (not row[9].strip())
+                score_str = row[10].replace('%', '') if isinstance(row[10], str) else str(row[10])
+                score = int(score_str) if score_str.isdigit() else 100
+                
+                if (score < 100 and t1 and t2) or (t1 and missing_def):
+                    row_map[str(len(ai_batch))] = r_idx
+                    ai_batch.append({'t1': t1, 't2': t2, 'missing_def': missing_def})
+            
+            # 2. Process them in safe chunks of 50 to prevent API timeouts/truncation
+            if ai_batch:
+                chunk_size = 50
+                for i in range(0, len(ai_batch), chunk_size):
+                    chunk = ai_batch[i:i + chunk_size]
+                    
+                    # Send this specific chunk to Gemini
+                    ai_insights = batch_ai_term_review(chunk, lang1, lang2)
+                    
+                    # Map the local chunk answers back to the global Excel rows
+                    for local_id, insight in ai_insights.items():
+                        global_id = str(i + int(local_id))
+                        if global_id in row_map:
+                            actual_row_idx = row_map[global_id]
+                            data_rows[actual_row_idx][11] = insight # Add to AI Notes column
+        # --- END AI ADD-ON ---
 
         for row in data_rows:
             ws.append(row)

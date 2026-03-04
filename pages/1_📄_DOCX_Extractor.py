@@ -4,6 +4,7 @@ import shutil
 from datetime import datetime
 from modules.docx.docx_logic import extract_sentence_diffs, create_html_report
 from modules.shared.styles import set_page_style
+from modules.docx.ai_summarizer import generate_executive_summary
 
 # 1. Page Config
 st.set_page_config(
@@ -83,7 +84,7 @@ and consolidates them into a single HTML report for easy auditing.
 with st.expander("ℹ️ How to use this tool", expanded=True):
     st.markdown("""
     1. **Upload Files:** Drag and drop your `.docx` files into the uploader below.
-    2. **Process:** The system will automatically scan for added/deleted text.
+    2. **Process:** Click the **Extract Tracked Changes** button.
     3. **Review:** Status indicator for progress.
     4. **Download:** Click the button to save the **Master Report**.
     """)
@@ -91,49 +92,68 @@ with st.expander("ℹ️ How to use this tool", expanded=True):
 st.warning("⚠️ **CONFIDENTIAL:** For Internal Vistatec Use Only.")
 st.markdown("---")
 
-# 5. File Uploader
-uploaded_files = st.file_uploader(
-    "📂 Upload DOCX Files",
-    type="docx",
-    accept_multiple_files=True,
-    help="Limit 200MB per file."
-)
+# 5. File Uploader & Controls
+col1, col2 = st.columns([3, 1])
+with col1:
+    uploaded_files = st.file_uploader(
+        "📂 Upload DOCX Files",
+        type="docx",
+        accept_multiple_files=True,
+        help="Limit 200MB per file."
+    )
+with col2:
+    st.write("<br>", unsafe_allow_html=True) # Spacer
+    enable_ai = st.toggle("✨ Enable AI Summary", help="Uses Gemini to summarize substantive changes.")
+    
+    # --- DYNAMIC AI WARNING ---
+    if enable_ai:
+        st.markdown("""
+        <div style="font-size: 0.8em; color: #666; margin-top: 10px; line-height: 1.2;">
+            🤖 <b>Note:</b> Gemini is AI and can make mistakes. Please review all AI outputs manually.<br>
+            <a href="https://support.google.com/gemini/answer/13594961" target="_blank">Your privacy & Gemini</a>
+        </div>
+        """, unsafe_allow_html=True)
 
+# 6. Processing Logic
 if uploaded_files:
-    os.makedirs("temp_upload", exist_ok=True)
-    all_changes = []
-
-    # 6. Modern Status Container (Replaces simple progress bar)
-    # This creates a visually pleasing 'log' that collapses when done
-    with st.status("🚀 Processing documents...", expanded=True) as status:
+    # --- THIS IS THE NEW BUTTON ---
+    if st.button("🚀 Extract Tracked Changes", type="primary"):
         
-        for i, uploaded_file in enumerate(uploaded_files):
-            # Update status label
-            status.update(label=f"Scanning: {uploaded_file.name}...")
+        os.makedirs("temp_upload", exist_ok=True)
+        all_changes = []
+
+        # Modern Status Container
+        with st.status("⚙️ Processing documents...", expanded=True) as status:
             
-            # Save temp file
+            for i, uploaded_file in enumerate(uploaded_files):
+                status.update(label=f"Scanning: {uploaded_file.name}...")
+            
             temp_path = os.path.join("temp_upload", uploaded_file.name)
             with open(temp_path, "wb") as f:
                 f.write(uploaded_file.getbuffer())
 
-            # Process logic
             file_changes = extract_sentence_diffs(temp_path)
 
-            # Add filename to tuple
             for original, edited, html in file_changes:
                 all_changes.append((uploaded_file.name, original, edited, html))
                 
-        # Mark as complete
-        status.update(label="✅ Processing Complete!", state="complete", expanded=True)
+        status.update(label="✅ Extraction Complete!", state="complete", expanded=False)
 
     # 7. Results Dashboard
     st.markdown("---")
     
     if all_changes:
-        # Metrics Row - Gives a professional "Dashboard" feel
         col1, col2 = st.columns(2)
         col1.metric("Documents Scanned", len(uploaded_files))
         col2.metric("Total Changes Found", len(all_changes))
+
+        # --- NEW AI SUMMARY DISPLAY ---
+        if enable_ai:
+            st.markdown("### ✨ AI Executive Summary")
+            with st.spinner("🤖 Analyzing changes..."):
+                ai_summary = generate_executive_summary(all_changes)
+                st.info(ai_summary)
+        # ------------------------------
 
         # Generate Report
         report_html = create_html_report(all_changes)

@@ -82,12 +82,26 @@ with st.expander("ℹ️ How to use this tool", expanded=True):
 st.warning("⚠️ **CONFIDENTIAL:** For Internal Vistatec Use Only.")
 st.markdown("---")
 
-# 5. File Uploader
-uploaded_files = st.file_uploader(
-    "📂 Upload TermWeb XML Files", 
-    type=["xml"],
-    accept_multiple_files=True
-)
+# 5. File Uploader & AI Toggle
+col1, col2 = st.columns([3, 1])
+with col1:
+    uploaded_files = st.file_uploader(
+        "📂 Upload TermWeb XML Files", 
+        type=["xml"],
+        accept_multiple_files=True
+    )
+with col2:
+    st.write("<br>", unsafe_allow_html=True) # Spacer to align the toggle with the uploader
+    enable_ai = st.toggle("✨ Enable AI Semantic Review", help="Uses Gemini to check synonym validity and generate definitions.")
+    
+    # --- NEW DYNAMIC AI WARNING ---
+    if enable_ai:
+        st.markdown("""
+        <div style="font-size: 0.8em; color: #666; margin-top: 10px; line-height: 1.2;">
+            🤖 <b>Note:</b> Gemini is AI and can make mistakes. Please review all AI outputs manually.<br>
+            <a href="https://support.google.com/gemini/answer/13594961" target="_blank">Your privacy & Gemini</a>
+        </div>
+        """, unsafe_allow_html=True)
 
 # 6. Processing Logic
 if uploaded_files:
@@ -114,7 +128,8 @@ if uploaded_files:
                         f.write(uploaded_file.getbuffer())
                     
                     # Process file (generates multiple XLSX files in TEMP_OUTPUT)
-                    parse_xml_to_xlsx(input_path, TEMP_OUTPUT)
+                    # --- AI FLAG ADDED HERE ---
+                    parse_xml_to_xlsx(input_path, TEMP_OUTPUT, enable_ai=enable_ai)
 
                 # Zip Results
                 status.write("📦 Packaging Excel reports...")

@@ -114,12 +114,26 @@ with col2:
 
 st.markdown("---")
 
-# 6. File Uploader
-uploaded_files = st.file_uploader(
-    "📂 Upload TMX Files", 
-    type=["tmx"], 
-    accept_multiple_files=True
-)
+# 6. File Uploader & AI Toggle
+col_up1, col_up2 = st.columns([3, 1])
+with col_up1:
+    uploaded_files = st.file_uploader(
+        "📂 Upload TMX Files", 
+        type=["tmx"], 
+        accept_multiple_files=True
+    )
+with col_up2:
+    st.write("<br>", unsafe_allow_html=True) # Spacer for alignment
+    enable_ai = st.toggle("✨ Enable AI Semantic QE", help="Uses Gemini to identify severe mistranslations.")
+    
+    # --- DYNAMIC AI WARNING ---
+    if enable_ai:
+        st.markdown("""
+        <div style="font-size: 0.8em; color: #666; margin-top: 10px; line-height: 1.2;">
+            🤖 <b>Note:</b> Gemini is AI and can make mistakes. Please review all AI outputs manually.<br>
+            <a href="https://support.google.com/gemini/answer/13594961" target="_blank">Your privacy & Gemini</a>
+        </div>
+        """, unsafe_allow_html=True)
 
 if uploaded_files:
     if st.button("🚀 Run Cleaner", type="primary"):
@@ -148,12 +162,14 @@ if uploaded_files:
                 def update_status(msg):
                     status_container.write(f"⚙️ {msg}")
 
+                # --- AI FLAG ADDED TO THIS FUNCTION CALL ---
                 files_scanned, files_cleaned, tus_removed = clean_tmx_files(
                     input_folder=INPUT_DIR,
                     output_folder=OUTPUT_DIR,
                     char_threshold=char_threshold,
                     tag_threshold=tag_threshold,
-                    status_callback=update_status
+                    status_callback=update_status,
+                    enable_ai=enable_ai 
                 )
                 
                 # 3. Zip Results
