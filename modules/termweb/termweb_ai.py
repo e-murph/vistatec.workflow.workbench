@@ -40,7 +40,7 @@ def batch_ai_term_review(terms_to_review, lang1, lang2):
 
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash-lite',
+            model='gemini-3.1-flash-lite-preview',
             contents=prompt
         )
         
