@@ -128,45 +128,45 @@ if uploaded_files:
             for i, uploaded_file in enumerate(uploaded_files):
                 status.update(label=f"Scanning: {uploaded_file.name}...")
             
-            temp_path = os.path.join("temp_upload", uploaded_file.name)
-            with open(temp_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
+                temp_path = os.path.join("temp_upload", uploaded_file.name)
+                with open(temp_path, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
 
-            file_changes = extract_sentence_diffs(temp_path)
+                file_changes = extract_sentence_diffs(temp_path)
 
-            for original, edited, html in file_changes:
-                all_changes.append((uploaded_file.name, original, edited, html))
+                for original, edited, html in file_changes:
+                    all_changes.append((uploaded_file.name, original, edited, html))
                 
-        status.update(label="✅ Extraction Complete!", state="complete", expanded=False)
+            status.update(label="✅ Extraction Complete!", state="complete", expanded=False)
 
-    # 7. Results Dashboard
-    st.markdown("---")
-    
-    if all_changes:
-        col1, col2 = st.columns(2)
-        col1.metric("Documents Scanned", len(uploaded_files))
-        col2.metric("Total Changes Found", len(all_changes))
+        # 7. Results Dashboard
+        st.markdown("---")
+        
+        if all_changes:
+            col1, col2 = st.columns(2)
+            col1.metric("Documents Scanned", len(uploaded_files))
+            col2.metric("Total Changes Found", len(all_changes))
 
-        # --- NEW AI SUMMARY DISPLAY ---
-        if enable_ai:
-            st.markdown("### ✨ AI Executive Summary")
-            with st.spinner("🤖 Analyzing changes..."):
-                ai_summary = generate_executive_summary(all_changes)
-                st.info(ai_summary)
-        # ------------------------------
+            # --- NEW AI SUMMARY DISPLAY ---
+            if enable_ai:
+                st.markdown("### ✨ AI Executive Summary")
+                with st.spinner("🤖 Analyzing changes..."):
+                    ai_summary = generate_executive_summary(all_changes)
+                    st.info(ai_summary)
+            # ------------------------------
 
-        # Generate Report
-        report_html = create_html_report(all_changes)
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-        file_name = f"Master_Report_{timestamp}.html"
+            # Generate Report
+            report_html = create_html_report(all_changes)
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+            file_name = f"Master_Report_{timestamp}.html"
 
-        # Download Button
-        st.download_button(
-            label="📥 Download Master Report",
-            data=report_html,
-            file_name=file_name,
-            mime="text/html",
-            use_container_width=True
-        )
-    else:
-        st.info(f"✅ Scanned {len(uploaded_files)} files, but no tracked changes were found.")
+            # Download Button
+            st.download_button(
+                label="📥 Download Master Report",
+                data=report_html,
+                file_name=file_name,
+                mime="text/html",
+                use_container_width=True
+            )
+        else:
+            st.info(f"✅ Scanned {len(uploaded_files)} files, but no tracked changes were found.")
