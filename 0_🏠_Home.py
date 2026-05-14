@@ -53,7 +53,7 @@ st.markdown(
 
     <div class="header-container">
         <img src="data:image/png;base64,{logo_b64}" class="header-logo">
-        <h1 class="header-title">Tech Ops Toolkit</h1>
+        <h1 class="header-title">TechOps Toolkit</h1>
     </div>
     """,
     unsafe_allow_html=True
@@ -62,7 +62,7 @@ st.markdown(
 # ----------------------
 
 st.markdown("""
-### Welcome to the Tech Ops Toolkit utility hub
+### Welcome to the TechOps utility hub
 Select a tool from the sidebar to begin.
 
 ---
