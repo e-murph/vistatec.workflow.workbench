@@ -2,7 +2,7 @@ import streamlit as st
 from modules.shared.styles import set_page_style, get_base64_of_bin_file
 
 st.set_page_config(
-    page_title="Tech Ops Toolkit",
+    page_title="Vistatec Workflow Workbench",
     page_icon="assets/page_icon.png",
     layout="centered"
 )
@@ -53,7 +53,7 @@ st.markdown(
 
     <div class="header-container">
         <img src="data:image/png;base64,{logo_b64}" class="header-logo">
-        <h1 class="header-title">Workflow Workbench</h1>
+        <h1 class="header-title">Tech Ops Toolkit</h1>
     </div>
     """,
     unsafe_allow_html=True
