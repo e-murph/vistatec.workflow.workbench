@@ -2,7 +2,7 @@ import streamlit as st
 from modules.shared.styles import set_page_style, get_base64_of_bin_file
 
 st.set_page_config(
-    page_title="Vistatec Workflow Workbench",
+    page_title="TechOps Toolkit",
     page_icon="assets/page_icon.png",
     layout="centered"
 )
@@ -62,7 +62,7 @@ st.markdown(
 # ----------------------
 
 st.markdown("""
-### Welcome to the TechOps utility hub
+### Welcome to the Technical Operations Utility Hub
 Select a tool from the sidebar to begin.
 
 ---
